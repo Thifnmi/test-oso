@@ -99,20 +99,3 @@ def list_repo(username):
             repo.append(item)
     repo = json.dumps(repo, default=str)
     return repo, 200
-
-
-@app.route("/update/<repo_name>/<username>/<permission>")
-def update_repo(repo_name, username, permission):
-    repo = Repository.get_by_name(repo_name)
-    if repo is None:
-        res = {}
-        res["status"] = 404
-        return res, 404
-    return repo, 200
-
-
-# @app.route("/list/<username>")
-# def list_repo_can_read(username):
-#     repos = User.get_repo_by_user(username)
-#     print(repos)
-#     return repos
