@@ -1,5 +1,3 @@
-# Oso Python Quickstart
-
 Follow along [here](https://docs.osohq.com/getting-started/quickstart.html).
 
 ## Instructions
@@ -8,7 +6,7 @@ Follow along [here](https://docs.osohq.com/getting-started/quickstart.html).
 2. Install dependencies: `pip install -r requirements.txt`
 3. Run the server: `FLASK_APP=app.server python -m flask run`
 
-## Make some changes
+## Test API
 
 If you visit
 [http://localhost:5000/repo/gmail/user1/delete](http://localhost:5000/repo/gmail/user1/delete), you
