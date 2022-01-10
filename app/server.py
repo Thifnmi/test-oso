@@ -12,8 +12,16 @@ oso = Oso()
 oso.register_class(User)
 oso.register_class(Repository)
 
-# Load your policy files.
-oso.load_files(["app/main.polar"])
+policy1 = 'allow(actor, action, resource) if has_permission(actor, action, resource); actor User {} resource Repository { permissions = ["read", "push", "delete"]; roles = ["contributor", "maintainer", "admin"]; "read" if "contributor"; "push" if "maintainer"; "delete" if "admin"; "contributor" if "maintainer"; "maintainer" if "admin"; } has_role(actor: User, role_name: String, repository: Repository) if role in actor.roles and role_name = role.name and repository = role.repository;'
+policy2 = 'allow(actor, action, resource) if has_permission(actor, action, resource); actor User {} resource Repository { permissions = ["read", "push", "delete"]; roles = ["contributor", "maintainer", "admin"]; "read" if "contributor"; "push" if "maintainer"; "delete" if "admin"; "contributor" if "maintainer"; "maintainer" if "admin"; } has_role(actor: User, role_name: String, repository: Repository) if role in actor.roles and role_name = role.name and repository = role.repository; has_permission(_actor: User, "read", repository: Repository) if repository.is_public; allow(actor, action, resource) if has_permission(actor, action, resource);'
+
+# Load your policy from string.
+def change_rule(rule):
+    oso.clear_rules()
+    oso.load_str(rule)
+
+
+change_rule(policy1)
 
 app = Flask(__name__)
 
@@ -35,42 +43,6 @@ def repo_show(name, username, permission):
         else:
             return {"message": "permission deny"}
     return {"message": "repo not found"}
-    # try:
-    #     if oso.is_allowed(User.get_current_user(username), permission, repo):
-    #         res = {}
-    #         res["_username"] = username
-    #         res["status"] = "OK"
-    #         res["permission"] = permission
-    #         res["repo"] = repo.name
-    #         res["status"] = 200
-    #         return res, 200
-    #     else:
-    #         return {"message": "permission deny"}
-    #     oso.authorize(User.get_current_user(username), permission, repo)
-    #     res = {}
-    #     res["_username"] = username
-    #     res["status"] = "OK"
-    #     res["permission"] = permission
-    #     res["repo"] = repo.name
-    #     res["status"] = 200
-    #     return res, 200
-
-    # except NotFoundError:
-    #     res = {}
-    #     res["_username"] = username
-    #     res["except"] = "NotFoundError"
-    #     res["permission"] = permission
-    #     res["repo"] = name
-    #     res["status"] = 404
-    #     return res, 404
-    # except ForbiddenError:
-    #     res = {}
-    #     res["_username"] = username
-    #     res["except"] = "ForbiddenError"
-    #     res["permission"] = permission
-    #     res["repo"] = name
-    #     res["status"] = 403
-    #     return res, 403
 
 
 @app.route("/allrepo")
@@ -84,8 +56,27 @@ def all_repo():
     return repos, 200
 
 
+@app.route("/repos/<username>")
+def list_repos(username):
+    change_rule(policy1)
+    repos = Repository.get_all()
+    if repos is None:
+        res = {}
+        res["message"] = "List repo is none"
+        res["status"] = 404
+        return res, 404
+    repo = []
+    for item in repos:
+        item = Repository.get_by_name(item)
+        if oso.is_allowed(User.get_current_user(username), "read", item):
+            repo.append(item)
+    repo = json.dumps(repo, default=str)
+    return repo, 200
+
+
 @app.route("/repo/<username>")
 def list_repo(username):
+    change_rule(policy2)
     repos = Repository.get_all()
     if repos is None:
         res = {}
