@@ -20,7 +20,7 @@ should see a message permission deny, because this repo is public but you not ha
 
 If you visit
 [http://localhost:5000/repo/react/user1/read](http://localhost:5000/repo/react/user1/read), you
-should get a 200 response, bscause the `react` repo is marked as public.
+should get a 200 response, because the `react` repo is marked as public.
 
 If you visit
 [http://localhost:5000/repo/user1](http://localhost:5000/repo/user1), you should see repo you
