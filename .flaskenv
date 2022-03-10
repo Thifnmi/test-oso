@@ -1,0 +1,2 @@
+FLASK_APP=app.server
+FLASK_DEBUG=1

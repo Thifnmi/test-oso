@@ -30,6 +30,11 @@ class User:
     @staticmethod
     def get_current_user(name):
         return users_db[name]
+    
+    def has_admin(user):
+        if user.roles[0].name.upper() == 'ADMIN':
+            return True
+        return False
 
 
 repos_db = {
