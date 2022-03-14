@@ -2,8 +2,7 @@ import json
 from flask import Flask
 from oso import Oso, NotFoundError, ForbiddenError
 from .models import User, Resources
-import simplejson as sjson
-import jsonpickle
+
 
 # Initialize the Oso object. This object is usually used globally throughout
 # an application.
@@ -31,8 +30,9 @@ app = Flask(__name__)
 @app.route("/resource/<id_resource>/<id_user>")
 def repo_show(id_resource, id_user):
     repo = Resources.get_by_id(id_resource)
+    print(repo)
     if repo:
-        print(oso.get_allowed_actions(User.get_current_user(id_user), repo))
+        print(User.get_current_user(id_user))
         if oso.is_allowed(User.get_current_user(id_user), repo):
             res = {}
             res["_username"] = id_user

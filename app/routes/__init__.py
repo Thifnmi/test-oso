@@ -1,0 +1,1 @@
+from app.routes import permissions, resources, users
