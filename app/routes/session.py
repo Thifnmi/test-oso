@@ -11,7 +11,7 @@ def show():
     return jsonify(g.current_user.repr() if g.current_user else None)
 
 
-@bp.route("", methods=["POST"])
+@bp.route("/login", methods=["GET"])
 def create():
     payload = request.get_json()
     if "id" not in payload:

@@ -23,7 +23,7 @@ def load_data(session):
 
     repo1 = Repository(type="list", service="cloud-server", endpoint="iaas/api/list-server")
     repo2 = Repository(type="get", service="cloud-server", endpoint="iaas/api/servers")
-    repo3 = Repository(type="create", service="cloud-serve", endpoint="iaas/api/create-server")
+    repo3 = Repository(type="create", service="cloud-server", endpoint="iaas/api/create-server")
     repo4 = Repository(type="update", service="cloud-server",endpoint="iaas/api/update-server")
     repo5 = Repository(type="delete", service="cloud-server",endpoint="iaas/api/delete-server")
     repo6 = Repository(type="list", service="billing", endpoint="billing/api/list-invoice")
