@@ -1,11 +1,11 @@
-from flask import g, Flask, session as fl_session
+from flask import g, Flask, session as flask_session
 from sqlalchemy import create_engine, and_, inspect, event, text
-from .models import User, Permission, Resource
-from sqlalchemy.orm import sessionmaker
+from .models import Base, User, Permission, Repository
+from sqlalchemy.orm import sessionmaker, scoped_session
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
-from polar.data_filtering import Relation
 from polar.data.adapter.sqlalchemy_adapter import SqlAlchemyAdapter
 from oso import Oso, OsoError
+from app.insert_data import load_data
 
 
 def create_app():
@@ -19,6 +19,7 @@ def create_app():
     app.register_blueprint(routes.users.bp)
     app.register_blueprint(routes.permissions.bp)
     app.register_blueprint(routes.resources.bp)
+    app.register_blueprint(routes.session.bp)
 
     @app.errorhandler(BadRequest)
     def handle_bad_request(*_):
@@ -30,11 +31,57 @@ def create_app():
 
     @app.errorhandler(NotFound)
     def handle_not_found(*_):
-        return {"message": "Not Found"}, 404
+        return {"message": "Access deny"}, 404
 
     Session = sessionmaker(bind=engine)
 
     init_oso(app, Session)
+    Base.metadata.create_all(engine)
+
+    db_session = scoped_session(sessionmaker(autocommit=False,
+                                         autoflush=False,
+                                         bind=engine))
+    Base.query = db_session.query_property()
+
+    with open("permission.txt", "r") as t:
+        if t.read() == "okay":
+            load_data(Session())
+    
+    with open("permission.txt", "w") as t:
+        t.write("deny")
+
+    
+    @app.before_request
+    def set_current_user_and_session():
+        flask_session.permanent = True
+
+        g.session = Session()
+        # docs: begin-authn
+        if "current_user" not in g:
+            if "current_user_id" in flask_session:
+                user_id = flask_session.get("current_user_id")
+                user = g.session.query(User).filter_by(id=user_id).one_or_none()
+                if user is None:
+                    flask_session.pop("current_user_id")
+                g.current_user = user
+            else:
+                g.current_user = None
+        # docs: end-authn
+
+    @app.after_request
+    def add_cors_headers(res):
+        res.headers.add("Access-Control-Allow-Origin", "http://localhost:5000")
+        res.headers.add("Access-Control-Allow-Headers", "Accept,Content-Type")
+        res.headers.add("Access-Control-Allow-Methods", "DELETE,GET,OPTIONS,PATCH,POST")
+        res.headers.add("Access-Control-Allow-Credentials", "true")
+        return res
+
+    @app.after_request
+    def close_session(res):
+        if "session" in g:
+            g.session.close()
+        return res
+    return app
 
 def init_oso(app, Session: sessionmaker):
     # Initialize SQLAlchemyOso instance.
@@ -70,70 +117,15 @@ def init_oso(app, Session: sessionmaker):
     oso.set_data_filtering_adapter(SqlAlchemyAdapter(Session()))
 
     oso.register_class(
-        Repo,
-        build_query=query_builder(Repo),
+        Repository,
+        build_query=query_builder(Repository),
         fields={
             "id": int,
-            "name": str,
-            "org": Relation(
-                kind="one", other_type="Org", my_field="org_id", other_field="id"
-            ),
-            "issues": Relation(
-                kind="many", other_type="Issue", my_field="id", other_field="repo_id"
-            ),
-        },
-    )
-
-    oso.register_class(
-        OrgRole,
-        build_query=query_builder(OrgRole),
-        fields={
-            "name": str,
-            "user": Relation(
-                kind="one", other_type="User", my_field="user_id", other_field="id"
-            ),
-            "org": Relation(
-                kind="one", other_type="Org", my_field="org_id", other_field="id"
-            ),
-        },
-    )
-
-    oso.register_class(
-        RepoRole,
-        build_query=query_builder(RepoRole),
-        fields={
-            "name": str,
-            "user": Relation(
-                kind="one", other_type="User", my_field="user_id", other_field="id"
-            ),
-            "repo": Relation(
-                kind="one", other_type="Repo", my_field="repo_id", other_field="id"
-            ),
-        },
-    )
-
-    oso.register_class(
-        Issue,
-        build_query=query_builder(Issue),
-        fields={
-            "title": str,
-            "repo": Relation(
-                kind="one", other_type="Repo", my_field="repo_id", other_field="id"
-            ),
-        },
-    )
-
-    oso.register_class(
-        Org,
-        build_query=query_builder(Org),
-        fields={
-            "id": int,
-            "name": str,
-            "base_repo_role": str,
-            "billing_address": str,
-            "repos": Relation(
-                kind="many", other_type="Repo", my_field="id", other_field="org_id"
-            ),
+            "uuid": str,
+            "type": str,
+            "service": str,
+            "endpoint": str,
+            "is_active": bool,
         },
     )
 
@@ -141,18 +133,25 @@ def init_oso(app, Session: sessionmaker):
         User,
         build_query=query_builder(User),
         fields={
-            "email": str,
-            "org_roles": Relation(
-                kind="many", other_type="OrgRole", my_field="id", other_field="user_id"
-            ),
-            "repo_roles": Relation(
-                kind="many", other_type="RepoRole", my_field="id", other_field="user_id"
-            ),
+            "id": int,
+            "uuid": str,
+            "role": str,
+            "is_active": bool,
+        },
+    )
+
+    oso.register_class(
+        Permission,
+        build_query=query_builder(Permission),
+        fields={
+            "id": int,
+            "uuid": str,
+            "action": str,
         },
     )
 
     # Load authorization policy.
-    oso.load_files(["app/authorization.polar"])
+    oso.load_files(["app/main.polar"])
 
     # Attach Oso instance to Flask application.
     app.oso = oso
