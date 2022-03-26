@@ -1,1 +1,1 @@
-from app.routes import permissions, resources, users, session
+from app.routes import permission, resource, user, session, group

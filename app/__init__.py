@@ -1,6 +1,6 @@
 from flask import g, Flask, session as flask_session
 from sqlalchemy import create_engine, and_, inspect, event, text
-from .models import Base, User, Permission, Repository
+from .models import Base, User, Permission, Group, GroupUserMap, GUMRoleMap, Resources, Role
 from sqlalchemy.orm import sessionmaker, scoped_session
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 from polar.data.adapter.sqlalchemy_adapter import SqlAlchemyAdapter
@@ -16,10 +16,12 @@ def create_app():
 
     from app import routes
 
-    app.register_blueprint(routes.users.bp)
-    app.register_blueprint(routes.permissions.bp)
-    app.register_blueprint(routes.resources.bp)
+    app.register_blueprint(routes.user.bp)
+    app.register_blueprint(routes.permission.bp)
+    app.register_blueprint(routes.resource.bp)
     app.register_blueprint(routes.session.bp)
+    app.register_blueprint(routes.group.bp)
+
 
     @app.errorhandler(BadRequest)
     def handle_bad_request(*_):
@@ -70,7 +72,7 @@ def create_app():
 
     @app.after_request
     def add_cors_headers(res):
-        res.headers.add("Access-Control-Allow-Origin", "http://localhost:5000")
+        res.headers.add("Access-Control-Allow-Origin", "http://192.168.18.117:8888")
         res.headers.add("Access-Control-Allow-Headers", "Accept,Content-Type")
         res.headers.add("Access-Control-Allow-Methods", "DELETE,GET,OPTIONS,PATCH,POST")
         res.headers.add("Access-Control-Allow-Credentials", "true")
@@ -117,15 +119,15 @@ def init_oso(app, Session: sessionmaker):
     oso.set_data_filtering_adapter(SqlAlchemyAdapter(Session()))
 
     oso.register_class(
-        Repository,
-        build_query=query_builder(Repository),
+        Resources,
+        build_query=query_builder(Resources),
         fields={
             "id": int,
             "uuid": str,
             "type": str,
-            "service": str,
+            "service_type": str,
+            "service_name": str,
             "endpoint": str,
-            "is_active": bool,
         },
     )
 
@@ -135,8 +137,7 @@ def init_oso(app, Session: sessionmaker):
         fields={
             "id": int,
             "uuid": str,
-            "role": str,
-            "is_active": bool,
+            "email": str,
         },
     )
 
@@ -146,8 +147,53 @@ def init_oso(app, Session: sessionmaker):
         fields={
             "id": int,
             "uuid": str,
+            "gum_role_map_uuid": str,
+            "resource_uuid": str,
             "action": str,
         },
+    )
+
+    oso.register_class(
+        Group,
+        build_query=query_builder(Group),
+        fields={
+            "id": int,
+            "uuid": str,
+            "name": str,
+        }
+    )
+
+    oso.register_class(
+        GroupUserMap,
+        build_query=query_builder(GroupUserMap),
+        fields={
+            "id": int,
+            "uuid": str,
+            "group_uuid": str,
+            "user_uuid": str,
+        }
+    )
+
+    oso.register_class(
+        Role,
+        build_query=query_builder(Role),
+        fields={
+            "id": int,
+            "uuid": str,
+            "name": str,
+            "is_custom": bool,
+        }
+    )
+
+    oso.register_class(
+        GUMRoleMap,
+        build_query=query_builder(GUMRoleMap),
+        fields={
+            "id": int,
+            "uuid": str,
+            "gum_uuid": str,
+            "role_uuid": str,
+        }
     )
 
     # Load authorization policy.

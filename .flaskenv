@@ -1,2 +1,3 @@
-FLASK_APP=app.create_app()
+FLASK_APP=app:create_app
 FLASK_DEBUG=1
+FLASK_ENV=development

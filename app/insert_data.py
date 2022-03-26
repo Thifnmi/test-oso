@@ -1,61 +1,155 @@
-from app.models import Base, User, Permission, Repository
+from app.models import Base, User, Group, GroupUserMap, Role, GUMRoleMap, Resources, Permission, ResourceMapping
+
+
+def _insert(session):
+    session.flush()
+    session.commit()
 
 def load_data(session):
-    def user(role):
-        user = User(role=role)
+    def group(name):
+        group = Group(name=name)
+        session.add(group)
+
+    def user(email):
+        user = User(email=email)
         session.add(user)
 
-    def permission(action):
-        permission = Permission(action=action)
-        session.add(permission)
+    def group_user_map(group_uuid, user_uuid):
+        gum = GroupUserMap(group_uuid=group_uuid, user_uuid=user_uuid)
+        session.add(gum)
 
-    def repository(type, service, endpoint):
-        repository = Repository(type=type, service=service, endpoint=endpoint)
+    def role(name, is_custom):
+        role = Role(name=name, is_custom=is_custom)
+        session.add(role)
+
+    def gum_role_map(gum_uuid, role_uuid):
+        gumrm = GUMRoleMap(gum_uuid=gum_uuid, role_uuid=role_uuid)
+        session.add(gumrm)
+
+    def resource(type, service_type, service_name, endpoint):
+        repository = Resources(type=type, service_type=service_type, service_name=service_name, endpoint=endpoint)
         session.add(repository)
 
+    def permission(gum_role_map_uuid, resource_uuid, action):
+        permission = Permission(gum_role_map_uuid=gum_role_map_uuid, resource_uuid=resource_uuid, action=action)
+        session.add(permission)
 
-    per_allow = Permission(action="allow")
-    per_deny = Permission(action="deny")
-    pers = [per_allow, per_deny]
+    def resource_mapping(resource_uuid, url):
+        rsm = ResourceMapping(resource_uuid=resource_uuid, url=url)
+        session.add(rsm)
 
-    for per in pers:
-        session.add(per)
+    resource_1 = Resources(type="list", service_type="", service_name="cloud-server", endpoint="cloudserver.api.list")
+    resource_2 = Resources(type="get", service_type="", service_name="cloud-server", endpoint="cloudserver.api.get")
+    resource_3 = Resources(type="create", service_type="", service_name="cloud-server", endpoint="cloudserver.api.create")
+    resource_4 = Resources(type="update", service_type="", service_name="cloud-server",endpoint="cloudserver.api.update")
+    resource_5 = Resources(type="delete", service_type="", service_name="cloud-server",endpoint="cloudserver.api.delete")
+    resource_6 = Resources(type="list", service_type="", service_name="billing", endpoint="billing.api.list")
+    resource_7 = Resources(type="get", service_type="", service_name="billing", endpoint="billing.api.get")
+    resource_8 = Resources(type="create", service_type="", service_name="billing", endpoint="billing.api.create")
+    resource_9 = Resources(type="update", service_type="", service_name="billing", endpoint="billing.api.update")
+    resource_10 = Resources(type="delete", service_type="", service_name="billing", endpoint="billing.api.delete")
+    resource_11 = Resources(type="list", service_type="", service_name="cloud-driver", endpoint="cloudstorage.api.list")
+    resource_12 = Resources(type="get", service_type="", service_name="cloud-driver", endpoint="cloudstorage.api.get")
+    resource_13 = Resources(type="create", service_type="", service_name="cloud-driver", endpoint="cloudstorage.api.create")
+    resource_14 = Resources(type="update", service_type="", service_name="cloud-driver",endpoint="cloudstorage.api.update")
+    resource_15 = Resources(type="delete", service_type="", service_name="cloud-driver",endpoint="cloudstorage.api.delete")
+    resource_16 = Resources(type="list", service_type="", service_name="k8s", endpoint="kubernetesengine.api.list")
+    resource_17 = Resources(type="get", service_type="", service_name="k8s", endpoint="kubernetesengine.api.get")
+    resource_18 = Resources(type="create", service_type="", service_name="k8s", endpoint="kubernetesengine.api.create")
+    resource_19 = Resources(type="update", service_type="", service_name="k8s", endpoint="kubernetesengine.api.update")
+    resource_20 = Resources(type="delete", service_type="", service_name="k8s", endpoint="kubernetesengine.api.delete")
 
-    repo1 = Repository(type="list", service="cloud-server", endpoint="iaas/api/list-server")
-    repo2 = Repository(type="get", service="cloud-server", endpoint="iaas/api/servers")
-    repo3 = Repository(type="create", service="cloud-server", endpoint="iaas/api/create-server")
-    repo4 = Repository(type="update", service="cloud-server",endpoint="iaas/api/update-server")
-    repo5 = Repository(type="delete", service="cloud-server",endpoint="iaas/api/delete-server")
-    repo6 = Repository(type="list", service="billing", endpoint="billing/api/list-invoice")
-    repo7 = Repository(type="get", service="billing", endpoint="billing/api/invoices")
-    repo8 = Repository(type="create", service="billing", endpoint="billing/api/create-invoice")
-    repo9 = Repository(type="update", service="billing", endpoint="billing/api/update-invoice")
-    repo10 = Repository(type="delete", service="billing", endpoint="billing/api/delete-invoice")
-    repo11 = Repository(type="list", service="cloud-driver", endpoint="cloud-storage/api/list-driver")
-    repo12 = Repository(type="get", service="cloud-driver", endpoint="cloud-storage/api/driver")
-    repo13 = Repository(type="create", service="cloud-driver", endpoint="cloud-storage/api/create-driver")
-    repo14 = Repository(type="update", service="cloud-driver",endpoint="cloud-storage/api/update-driver")
-    repo15 = Repository(type="delete", service="cloud-driver",endpoint="cloud-storage/api/delete-driver")
-    repo16 = Repository(type="list", service="k8s", endpoint="kubernetes-engine/api/list-kubernetes-engine")
-    repo17 = Repository(type="get", service="k8s", endpoint="kubernetes-engine/api/kubernetes-engine")
-    repo18 = Repository(type="create", service="k8s", endpoint="kubernetes-engine/api/create-kubernetes-engine")
-    repo19 = Repository(type="update", service="k8s", endpoint="kubernetes-engine/api/update-kubernetes-engine")
-    repo20 = Repository(type="delete", service="k8s", endpoint="kubernetes-engine/api/delete-kubernetes-engine")
+    resources = [resource_1, resource_2, resource_3, resource_4, resource_5, resource_6, resource_7, resource_8, resource_9, resource_10,
+        resource_11, resource_12, resource_13, resource_14, resource_15, resource_16, resource_17, resource_18, resource_19, resource_20]
 
-    repos = [repo1, repo2, repo3, repo4, repo5, repo6, repo7, repo8, repo9, repo10,
-        repo11, repo12, repo13, repo14, repo15, repo16, repo17, repo18, repo19, repo20]
-    for repo in repos:
-        session.add(repo)
+    for _resource in resources:
+        session.add(_resource)
     
-    user1 = User(role="owner")
-    user2 = User(role="billing")
-    user3 = User(role="admin")
-    user4 = User(role="member")
+    user1 = User(email="owner@gmail.com")
+    user2 = User(email="billing@gmail.com")
+    user3 = User(email="admin@gmail.com")
+    user4 = User(email="member@gmail.com")
     users = [user1, user2, user3, user4]
 
     for usr in users:
         session.add(usr)
 
-    session.flush()
-    session.commit()
+    group1 = Group(name="group1")
+    group2 = Group(name="group2")
+    group3 = Group(name="group3")
+    group4 = Group(name="group4")
+    groups = [group1, group2, group3, group4]
+    for g in groups:
+        session.add(g)
+
+    role1 = Role(name="Owner", is_custom=False)
+    role2 = Role(name="billing", is_custom=False)
+    role3 = Role(name="admin", is_custom=False)
+    role4 = Role(name="member", is_custom=False)
+    roles = [role1, role2, role3, role4]
+    for r in roles:
+        session.add(r)
+
+    _insert(session)
+
+    rsm1 = ResourceMapping(resource_uuid=resource_1.uuid, url="iaas-cloud/api/list-server")
+    rsm2 = ResourceMapping(resource_uuid=resource_2.uuid, url="iaas-cloud/api/get-server")
+    rsm3 = ResourceMapping(resource_uuid=resource_3.uuid, url="iaas-cloud/api/create-server")
+    rsm4 = ResourceMapping(resource_uuid=resource_4.uuid, url="iaas-cloud/api/update-server")
+    rsm5 = ResourceMapping(resource_uuid=resource_5.uuid, url="iaas-cloud/api/delete-server")
+    rsm6 = ResourceMapping(resource_uuid=resource_6.uuid, url="billing/api/list-billing")
+    rsm7 = ResourceMapping(resource_uuid=resource_7.uuid, url="billing/api/get-billing")
+    rsm8 = ResourceMapping(resource_uuid=resource_8.uuid, url="billing/api/create-billing")
+    rsm9 = ResourceMapping(resource_uuid=resource_9.uuid, url="billing/api/update-server")
+    rsm10 = ResourceMapping(resource_uuid=resource_10.uuid, url="billing/api/delete-server")
+    rsm11 = ResourceMapping(resource_uuid=resource_11.uuid, url="cloud-driver/api/list-cloud-driver")
+    rsm12 = ResourceMapping(resource_uuid=resource_12.uuid, url="cloud-driver/api/get-cloud-driver")
+    rsm13 = ResourceMapping(resource_uuid=resource_13.uuid, url="cloud-driver/api/create-cloud-driver")
+    rsm14 = ResourceMapping(resource_uuid=resource_14.uuid, url="cloud-driver/api/update-cloud-driver")
+    rsm15 = ResourceMapping(resource_uuid=resource_15.uuid, url="cloud-driver/api/delete-cloud-driver")
+    rsm16 = ResourceMapping(resource_uuid=resource_16.uuid, url="kubernetes-engine/api/list-kubernetes-engine")
+    rsm17 = ResourceMapping(resource_uuid=resource_17.uuid, url="kubernetes-engine/api/get-kubernetes-engine")
+    rsm18 = ResourceMapping(resource_uuid=resource_18.uuid, url="kubernetes-engine/api/create-kubernetes-engine")
+    rsm19 = ResourceMapping(resource_uuid=resource_19.uuid, url="kubernetes-engine/api/update-kubernetes-engine")
+    rsm20 = ResourceMapping(resource_uuid=resource_20.uuid, url="kubernetes-engine/api/delete-kubernetes-engine")
+
+    rsms = [rsm1, rsm2, rsm3, rsm4, rsm5, rsm6, rsm7, rsm8, rsm9, rsm10,
+        rsm11, rsm12, rsm13, rsm14, rsm15, rsm16, rsm17, rsm18, rsm19, rsm20]
+
+    for item in rsms:
+        session.add(item)
+
+
+    gum1 = GroupUserMap(group_uuid=group1.uuid, user_uuid=user1.uuid)
+    gum2 = GroupUserMap(group_uuid=group2.uuid, user_uuid=user2.uuid)
+    gum3 = GroupUserMap(group_uuid=group3.uuid, user_uuid=user3.uuid)
+    gum4 = GroupUserMap(group_uuid=group4.uuid, user_uuid=user4.uuid)
+
+    gums = [gum1, gum2, gum3, gum4]
+    for gum in gums: 
+        session.add(gum)
+
+    _insert(session)
+
+    gum_role_map_1 = GUMRoleMap(gum_uuid=gum1.uuid, role_uuid=role1.uuid)
+    gum_role_map_2 = GUMRoleMap(gum_uuid=gum2.uuid, role_uuid=role2.uuid)
+    gum_role_map_3 = GUMRoleMap(gum_uuid=gum3.uuid, role_uuid=role3.uuid)
+    gum_role_map_4 = GUMRoleMap(gum_uuid=gum4.uuid, role_uuid=role4.uuid)
+
+    gum_role_maps = [gum_role_map_1, gum_role_map_2, gum_role_map_3, gum_role_map_4]
+    for item in gum_role_maps:
+        session.add(item)
+
+    _insert(session)
+
+    permission1 = Permission(gum_role_map_uuid=gum_role_map_1.uuid, resource_uuid="", action="allow")
+    permission2 = Permission(gum_role_map_uuid=gum_role_map_2.uuid, resource_uuid="", action="allow")
+    permission3 = Permission(gum_role_map_uuid=gum_role_map_3.uuid, resource_uuid="", action="allow")
+    permission4 = Permission(gum_role_map_uuid=gum_role_map_4.uuid, resource_uuid="", action="allow")
+
+    permissions = [permission1, permission2, permission3, permission4]
+    for item in permissions:
+        session.add(item)
+    
+    _insert(session)
     session.close()

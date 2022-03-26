@@ -2,7 +2,11 @@ from flask import Blueprint, g, jsonify, current_app
 
 from app.models import User
 
-bp = Blueprint("users", __name__, url_prefix="/users")
+bp = Blueprint("user", __name__, url_prefix="/user")
+
+@bp.route("/data/list", methods=["GET"])
+def listData():
+    return jsonify([item.repr() for item in User.query.all()])
 
 @bp.route("/<int:user_id>", methods=["GET"])
 def show(user_id):
