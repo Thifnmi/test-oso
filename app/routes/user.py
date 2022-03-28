@@ -12,5 +12,4 @@ def listData():
 def show(user_id):
     resource = g.session.query(User).filter_by(id=user_id).one_or_none()
     current_app.oso.authorize(g.current_user, "allow", resource)
-
     return resource.repr()

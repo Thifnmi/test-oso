@@ -21,6 +21,7 @@ def create_app():
     app.register_blueprint(routes.resource.bp)
     app.register_blueprint(routes.session.bp)
     app.register_blueprint(routes.group.bp)
+    app.register_blueprint(routes.role.bp)
 
 
     @app.errorhandler(BadRequest)

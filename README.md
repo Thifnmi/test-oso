@@ -4,7 +4,7 @@ Follow along [here](https://docs.osohq.com/getting-started/quickstart.html).
 
 1. Clone this repository.
 2. Install dependencies: `pip install -r requirements.txt`
-3. Run the server: `FLASK_APP=app.create_app flask run`
+3. Run the server: `FLASK_APP=app:create_app flask run`
 
 ## Note
 

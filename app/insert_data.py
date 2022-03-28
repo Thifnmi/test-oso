@@ -69,7 +69,10 @@ def load_data(session):
     user2 = User(email="billing@gmail.com")
     user3 = User(email="admin@gmail.com")
     user4 = User(email="member@gmail.com")
-    users = [user1, user2, user3, user4]
+    user5 = User(email="reader@gmail.com")
+    user6 = User(email="cusrole1@gmail.com")
+    user7 = User(email="memrole2@gmail.com")
+    users = [user1, user2, user3, user4, user5, user6, user7]
 
     for usr in users:
         session.add(usr)
@@ -77,16 +80,20 @@ def load_data(session):
     group1 = Group(name="group1")
     group2 = Group(name="group2")
     group3 = Group(name="group3")
-    group4 = Group(name="group4")
-    groups = [group1, group2, group3, group4]
+    groups = [group1, group2, group3]
     for g in groups:
         session.add(g)
+
+    _insert(session)
 
     role1 = Role(name="Owner", is_custom=False)
     role2 = Role(name="billing", is_custom=False)
     role3 = Role(name="admin", is_custom=False)
     role4 = Role(name="member", is_custom=False)
-    roles = [role1, role2, role3, role4]
+    role5 = Role(name="reader", is_custom=False)
+    role6 = Role(name=f"admin_{group2.uuid}", is_custom=True)
+    role7 = Role(name=f"Owner_{group1.uuid}", is_custom=True)
+    roles = [role1, role2, role3, role4, role5, role6, role7]
     for r in roles:
         session.add(r)
 
@@ -123,9 +130,12 @@ def load_data(session):
     gum1 = GroupUserMap(group_uuid=group1.uuid, user_uuid=user1.uuid)
     gum2 = GroupUserMap(group_uuid=group2.uuid, user_uuid=user2.uuid)
     gum3 = GroupUserMap(group_uuid=group3.uuid, user_uuid=user3.uuid)
-    gum4 = GroupUserMap(group_uuid=group4.uuid, user_uuid=user4.uuid)
+    gum4 = GroupUserMap(group_uuid=group2.uuid, user_uuid=user4.uuid)
+    gum5 = GroupUserMap(group_uuid=group3.uuid, user_uuid=user5.uuid)
+    gum6 = GroupUserMap(group_uuid=group3.uuid, user_uuid=user6.uuid)
+    gum7 = GroupUserMap(group_uuid=group3.uuid, user_uuid=user7.uuid)
 
-    gums = [gum1, gum2, gum3, gum4]
+    gums = [gum1, gum2, gum3, gum4, gum5, gum6, gum7]
     for gum in gums: 
         session.add(gum)
 
@@ -135,8 +145,11 @@ def load_data(session):
     gum_role_map_2 = GUMRoleMap(gum_uuid=gum2.uuid, role_uuid=role2.uuid)
     gum_role_map_3 = GUMRoleMap(gum_uuid=gum3.uuid, role_uuid=role3.uuid)
     gum_role_map_4 = GUMRoleMap(gum_uuid=gum4.uuid, role_uuid=role4.uuid)
+    gum_role_map_5 = GUMRoleMap(gum_uuid=gum5.uuid, role_uuid=role5.uuid)
+    gum_role_map_6 = GUMRoleMap(gum_uuid=gum6.uuid, role_uuid=role6.uuid)
+    gum_role_map_7 = GUMRoleMap(gum_uuid=gum7.uuid, role_uuid=role7.uuid)
 
-    gum_role_maps = [gum_role_map_1, gum_role_map_2, gum_role_map_3, gum_role_map_4]
+    gum_role_maps = [gum_role_map_1, gum_role_map_2, gum_role_map_3, gum_role_map_4, gum_role_map_5, gum_role_map_6, gum_role_map_7]
     for item in gum_role_maps:
         session.add(item)
 
@@ -146,8 +159,14 @@ def load_data(session):
     permission2 = Permission(gum_role_map_uuid=gum_role_map_2.uuid, resource_uuid="", action="allow")
     permission3 = Permission(gum_role_map_uuid=gum_role_map_3.uuid, resource_uuid="", action="allow")
     permission4 = Permission(gum_role_map_uuid=gum_role_map_4.uuid, resource_uuid="", action="allow")
+    permission5 = Permission(gum_role_map_uuid=gum_role_map_5.uuid, resource_uuid="", action="allow")
+    permission6 = Permission(gum_role_map_uuid=gum_role_map_6.uuid, resource_uuid="", action="allow")
+    permission7 = Permission(gum_role_map_uuid=gum_role_map_7.uuid, resource_uuid="", action="allow")
+    permission8 = Permission(gum_role_map_uuid=gum_role_map_5.uuid, resource_uuid=resource_5.uuid, action="allow")
+    permission9 = Permission(gum_role_map_uuid=gum_role_map_6.uuid, resource_uuid=resource_10.uuid, action="allow")
+    permission10 = Permission(gum_role_map_uuid=gum_role_map_7.uuid, resource_uuid=resource_10.uuid, action="allow")
 
-    permissions = [permission1, permission2, permission3, permission4]
+    permissions = [permission1, permission2, permission3, permission4, permission5, permission6, permission7, permission8, permission9, permission10]
     for item in permissions:
         session.add(item)
     
