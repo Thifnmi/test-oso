@@ -43,13 +43,14 @@ class User(Base):
             "email": self.email,
         }
 
-    def get_role(self):
+    def get_gum_role_map(self):
+        gum_role_map = GUMRoleMap.query.filter_by(gum_uuid=(GroupUserMap.query.filter_by(user_uuid=g.current_user.uuid).first()).uuid).all()
+        return gum_role_map
+
+    def get_permission(self):
         gum = GUMRoleMap.query.filter_by(gum_uuid=(GroupUserMap.query.filter_by(user_uuid=g.current_user.uuid).first()).uuid).first()
-        role = Role.query.filter_by(uuid=gum.role_uuid).first()
-        if role.is_custom:
-            print("is role custom")
-            return role.name.split("_")[0].lower()
-        return role.name.lower()
+        permissions = Permission.query.filter_by(gum_role_map_uuid=gum.uuid).all()
+        return permissions
 
     def is_custom(self):
         gums = GUMRoleMap.query.filter_by(gum_uuid=(GroupUserMap.query.filter_by(user_uuid=g.current_user.uuid).first()).uuid).all()
@@ -59,11 +60,6 @@ class User(Base):
                 if role.is_custom:
                     return True
         return False
-
-    def get_permission(self):
-        gum = GUMRoleMap.query.filter_by(gum_uuid=(GroupUserMap.query.filter_by(user_uuid=g.current_user.uuid).first()).uuid).first()
-        permissions = Permission.query.filter_by(gum_role_map_uuid=gum.uuid).all()
-        return permissions
 
 
 class GroupUserMap(Base):
@@ -161,12 +157,6 @@ class Permission(Base):
             "resource_uuid": self.resource_uuid,
             "action": self.action
         }
-
-    def get_action(self):
-        gum = GUMRoleMap.query.filter_by(gum_uuid=(GroupUserMap.query.filter_by(user_uuid=g.current_user.uuid).first()).uuid).first()
-        permissions = Permission.query.filter_by(gum_role_map_uuid=gum.uuid).all()
-        return [permission.action for permission in permissions]
-
 
 
 class ResourceMapping(Base):

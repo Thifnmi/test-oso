@@ -141,16 +141,17 @@ def load_data(session):
 
     _insert(session)
 
-    gum_role_map_1 = GUMRoleMap(gum_uuid=gum1.uuid, role_uuid=role1.uuid)
-    gum_role_map_2 = GUMRoleMap(gum_uuid=gum2.uuid, role_uuid=role2.uuid)
-    gum_role_map_3 = GUMRoleMap(gum_uuid=gum3.uuid, role_uuid=role3.uuid)
-    gum_role_map_4 = GUMRoleMap(gum_uuid=gum4.uuid, role_uuid=role4.uuid)
-    gum_role_map_5 = GUMRoleMap(gum_uuid=gum5.uuid, role_uuid=role5.uuid)
-    gum_role_map_6 = GUMRoleMap(gum_uuid=gum6.uuid, role_uuid=role6.uuid)
-    gum_role_map_7 = GUMRoleMap(gum_uuid=gum7.uuid, role_uuid=role7.uuid)
-    gum_role_map_8 = GUMRoleMap(gum_uuid=gum6.uuid, role_uuid=role2.uuid)
+    gum_role_map_1 = GUMRoleMap(gum_uuid=gum1.uuid, role_uuid=role1.uuid) #user 1 role owner
+    gum_role_map_2 = GUMRoleMap(gum_uuid=gum2.uuid, role_uuid=role2.uuid) #user 2 role billing
+    gum_role_map_3 = GUMRoleMap(gum_uuid=gum3.uuid, role_uuid=role3.uuid) #user 3 role admin
+    gum_role_map_4 = GUMRoleMap(gum_uuid=gum4.uuid, role_uuid=role4.uuid) #user 4 role member
+    gum_role_map_5 = GUMRoleMap(gum_uuid=gum5.uuid, role_uuid=role5.uuid) #user 5 role reader
+    gum_role_map_6 = GUMRoleMap(gum_uuid=gum6.uuid, role_uuid=role6.uuid) #user 6 role custom (update and delete CS)
+    gum_role_map_7 = GUMRoleMap(gum_uuid=gum7.uuid, role_uuid=role7.uuid) #user 7 role custom (delete cloud drive)
+    gum_role_map_8 = GUMRoleMap(gum_uuid=gum6.uuid, role_uuid=role2.uuid) #user 6 role billing
+    gum_role_map_9 = GUMRoleMap(gum_uuid=gum7.uuid, role_uuid=role5.uuid) #user 7 role reader
 
-    gum_role_maps = [gum_role_map_1, gum_role_map_2, gum_role_map_3, gum_role_map_4, gum_role_map_5, gum_role_map_6, gum_role_map_7, gum_role_map_8]
+    gum_role_maps = [gum_role_map_1, gum_role_map_2, gum_role_map_3, gum_role_map_4, gum_role_map_5, gum_role_map_6, gum_role_map_7, gum_role_map_8, gum_role_map_9]
     for item in gum_role_maps:
         session.add(item)
 
@@ -163,9 +164,9 @@ def load_data(session):
     permission5 = Permission(gum_role_map_uuid=gum_role_map_5.uuid, resource_uuid="", action="allow")
     permission6 = Permission(gum_role_map_uuid=gum_role_map_6.uuid, resource_uuid="", action="allow")
     permission7 = Permission(gum_role_map_uuid=gum_role_map_7.uuid, resource_uuid="", action="allow")
-    permission8 = Permission(gum_role_map_uuid=gum_role_map_6.uuid, resource_uuid=resource_5.uuid, action="allow")
-    permission9 = Permission(gum_role_map_uuid=gum_role_map_6.uuid, resource_uuid=resource_10.uuid, action="allow")
-    permission10 = Permission(gum_role_map_uuid=gum_role_map_7.uuid, resource_uuid=resource_11.uuid, action="allow")
+    permission8 = Permission(gum_role_map_uuid=gum_role_map_6.uuid, resource_uuid=resource_4.uuid, action="allow")
+    permission9 = Permission(gum_role_map_uuid=gum_role_map_6.uuid, resource_uuid=resource_5.uuid, action="allow")
+    permission10 = Permission(gum_role_map_uuid=gum_role_map_7.uuid, resource_uuid=resource_15.uuid, action="allow")
 
     permissions = [permission1, permission2, permission3, permission4, permission5, permission6, permission7, permission8, permission9, permission10]
     for item in permissions:
