@@ -4,12 +4,11 @@ from sqlalchemy.types import Integer, String
 from sqlalchemy.schema import Column, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from flask import g
-
 from sqlalchemy.ext.declarative import declarative_base
 
 
-
 Base = declarative_base()
+
 
 def generate_uuid():
     return str(uuid.uuid4())
@@ -49,18 +48,23 @@ class User(Base):
         role = Role.query.filter_by(uuid=gum.role_uuid).first()
         if role.is_custom:
             print("is role custom")
-            return role.name.split("_")[0]
+            return role.name.split("_")[0].lower()
         return role.name.lower()
+
     def is_custom(self):
-        gum = GUMRoleMap.query.filter_by(gum_uuid=(GroupUserMap.query.filter_by(user_uuid=g.current_user.uuid).first()).uuid).first()
-        role = Role.query.filter_by(uuid=gum.role_uuid).first()
-        if role.is_custom:
-            return True
+        gums = GUMRoleMap.query.filter_by(gum_uuid=(GroupUserMap.query.filter_by(user_uuid=g.current_user.uuid).first()).uuid).all()
+        for gum in gums:
+            roles = Role.query.filter_by(uuid=gum.role_uuid).all()
+            for role in roles:
+                if role.is_custom:
+                    return True
         return False
+
     def get_permission(self):
         gum = GUMRoleMap.query.filter_by(gum_uuid=(GroupUserMap.query.filter_by(user_uuid=g.current_user.uuid).first()).uuid).first()
         permissions = Permission.query.filter_by(gum_role_map_uuid=gum.uuid).all()
         return permissions
+
 
 class GroupUserMap(Base):
     __tablename__ = "group_user_maps"
@@ -98,6 +102,7 @@ class Resources(Base):
             "service name": self.service_name,
             "endpoint": self.endpoint,
         }
+
     def get_action(self):
         permission = Permission.query.filter_by(resource_uuid=self.uuid).first()
         return permission.action
@@ -156,6 +161,7 @@ class Permission(Base):
             "resource_uuid": self.resource_uuid,
             "action": self.action
         }
+
     def get_action(self):
         gum = GUMRoleMap.query.filter_by(gum_uuid=(GroupUserMap.query.filter_by(user_uuid=g.current_user.uuid).first()).uuid).first()
         permissions = Permission.query.filter_by(gum_role_map_uuid=gum.uuid).all()

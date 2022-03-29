@@ -71,7 +71,7 @@ def load_data(session):
     user4 = User(email="member@gmail.com")
     user5 = User(email="reader@gmail.com")
     user6 = User(email="cusrole1@gmail.com")
-    user7 = User(email="memrole2@gmail.com")
+    user7 = User(email="cusrole2@gmail.com")
     users = [user1, user2, user3, user4, user5, user6, user7]
 
     for usr in users:
@@ -127,13 +127,13 @@ def load_data(session):
         session.add(item)
 
 
-    gum1 = GroupUserMap(group_uuid=group1.uuid, user_uuid=user1.uuid)
-    gum2 = GroupUserMap(group_uuid=group2.uuid, user_uuid=user2.uuid)
-    gum3 = GroupUserMap(group_uuid=group3.uuid, user_uuid=user3.uuid)
-    gum4 = GroupUserMap(group_uuid=group2.uuid, user_uuid=user4.uuid)
-    gum5 = GroupUserMap(group_uuid=group3.uuid, user_uuid=user5.uuid)
-    gum6 = GroupUserMap(group_uuid=group3.uuid, user_uuid=user6.uuid)
-    gum7 = GroupUserMap(group_uuid=group3.uuid, user_uuid=user7.uuid)
+    gum1 = GroupUserMap(group_uuid=group1.uuid, user_uuid=user1.uuid) #owner 
+    gum2 = GroupUserMap(group_uuid=group2.uuid, user_uuid=user2.uuid) #billing
+    gum3 = GroupUserMap(group_uuid=group3.uuid, user_uuid=user3.uuid) #admin
+    gum4 = GroupUserMap(group_uuid=group2.uuid, user_uuid=user4.uuid) #member
+    gum5 = GroupUserMap(group_uuid=group3.uuid, user_uuid=user5.uuid) #reader
+    gum6 = GroupUserMap(group_uuid=group3.uuid, user_uuid=user6.uuid) #custom role 1
+    gum7 = GroupUserMap(group_uuid=group3.uuid, user_uuid=user7.uuid) #custom role 2
 
     gums = [gum1, gum2, gum3, gum4, gum5, gum6, gum7]
     for gum in gums: 
@@ -148,8 +148,9 @@ def load_data(session):
     gum_role_map_5 = GUMRoleMap(gum_uuid=gum5.uuid, role_uuid=role5.uuid)
     gum_role_map_6 = GUMRoleMap(gum_uuid=gum6.uuid, role_uuid=role6.uuid)
     gum_role_map_7 = GUMRoleMap(gum_uuid=gum7.uuid, role_uuid=role7.uuid)
+    gum_role_map_8 = GUMRoleMap(gum_uuid=gum6.uuid, role_uuid=role2.uuid)
 
-    gum_role_maps = [gum_role_map_1, gum_role_map_2, gum_role_map_3, gum_role_map_4, gum_role_map_5, gum_role_map_6, gum_role_map_7]
+    gum_role_maps = [gum_role_map_1, gum_role_map_2, gum_role_map_3, gum_role_map_4, gum_role_map_5, gum_role_map_6, gum_role_map_7, gum_role_map_8]
     for item in gum_role_maps:
         session.add(item)
 
@@ -162,9 +163,9 @@ def load_data(session):
     permission5 = Permission(gum_role_map_uuid=gum_role_map_5.uuid, resource_uuid="", action="allow")
     permission6 = Permission(gum_role_map_uuid=gum_role_map_6.uuid, resource_uuid="", action="allow")
     permission7 = Permission(gum_role_map_uuid=gum_role_map_7.uuid, resource_uuid="", action="allow")
-    permission8 = Permission(gum_role_map_uuid=gum_role_map_5.uuid, resource_uuid=resource_5.uuid, action="allow")
+    permission8 = Permission(gum_role_map_uuid=gum_role_map_6.uuid, resource_uuid=resource_5.uuid, action="allow")
     permission9 = Permission(gum_role_map_uuid=gum_role_map_6.uuid, resource_uuid=resource_10.uuid, action="allow")
-    permission10 = Permission(gum_role_map_uuid=gum_role_map_7.uuid, resource_uuid=resource_10.uuid, action="allow")
+    permission10 = Permission(gum_role_map_uuid=gum_role_map_7.uuid, resource_uuid=resource_11.uuid, action="allow")
 
     permissions = [permission1, permission2, permission3, permission4, permission5, permission6, permission7, permission8, permission9, permission10]
     for item in permissions:

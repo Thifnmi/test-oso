@@ -1,5 +1,5 @@
 from flask import g, Flask, session as flask_session
-from sqlalchemy import create_engine, and_, inspect, event, text
+from sqlalchemy import create_engine, and_
 from .models import Base, User, Permission, Group, GroupUserMap, GUMRoleMap, Resources, Role
 from sqlalchemy.orm import sessionmaker, scoped_session
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
@@ -59,7 +59,6 @@ def create_app():
         flask_session.permanent = True
 
         g.session = Session()
-        # docs: begin-authn
         if "current_user" not in g:
             if "current_user_id" in flask_session:
                 user_id = flask_session.get("current_user_id")
@@ -69,7 +68,6 @@ def create_app():
                 g.current_user = user
             else:
                 g.current_user = None
-        # docs: end-authn
 
     @app.after_request
     def add_cors_headers(res):
