@@ -14,8 +14,10 @@ def listData():
 @bp.route("/<int:resource_id>", methods=["GET"])
 def show(resource_id):
     resource = g.session.query(Resources).filter_by(id=resource_id).first()
-    # print(g.current_user.get_role())
-    current_app.oso.authorize(g.current_user, "allow", resource)
+    pers = g.current_user.get_permission()
+    for per in pers:
+        print(per.repr())
+    # current_app.oso.authorize(g.current_user, "allow", resource)
     return resource.repr()
 
 @bp.route("/list", methods=["GET"])

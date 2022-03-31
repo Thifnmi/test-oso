@@ -9,7 +9,7 @@ from app.insert_data import load_data
 
 
 def create_app():
-    engine = create_engine("sqlite:///test.db", connect_args={"check_same_thread":False})
+    engine = create_engine("sqlite:///newdatabase.db", connect_args={"check_same_thread":False})
 
     app = Flask(__name__)
     app.secret_key = "VccorpIAM"
@@ -146,7 +146,7 @@ def init_oso(app, Session: sessionmaker):
         fields={
             "id": int,
             "uuid": str,
-            "gum_role_map_uuid": str,
+            "role_uuid": str,
             "resource_uuid": str,
             "action": str,
         },

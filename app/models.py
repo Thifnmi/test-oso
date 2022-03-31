@@ -48,14 +48,14 @@ class User(Base):
         return gum_role_map
 
     def get_permission(self):
-        gum = GUMRoleMap.query.filter_by(gum_uuid=(GroupUserMap.query.filter_by(user_uuid=g.current_user.uuid).first()).uuid).first()
-        permissions = Permission.query.filter_by(gum_role_map_uuid=gum.uuid).all()
+        gumrm = GUMRoleMap.query.filter_by(gum_uuid=(GroupUserMap.query.filter_by(user_uuid=g.current_user.uuid).first()).uuid).first()
+        permissions = Permission.query.filter_by(role_uuid=gumrm.role_uuid).all()
         return permissions
 
     def is_custom(self):
-        gums = GUMRoleMap.query.filter_by(gum_uuid=(GroupUserMap.query.filter_by(user_uuid=g.current_user.uuid).first()).uuid).all()
-        for gum in gums:
-            roles = Role.query.filter_by(uuid=gum.role_uuid).all()
+        gumrms = GUMRoleMap.query.filter_by(gum_uuid=(GroupUserMap.query.filter_by(user_uuid=g.current_user.uuid).first()).uuid).all()
+        for gumrm in gumrms:
+            roles = Role.query.filter_by(uuid=gumrm.role_uuid).all()
             for role in roles:
                 if role.is_custom:
                     return True
@@ -145,7 +145,7 @@ class Permission(Base):
 
     id = Column(Integer, primary_key=True)
     uuid = Column(String(36), name="uuid", unique=True, default=generate_uuid)
-    gum_role_map_uuid = Column(String(36), name="gum_role_map_uuid")
+    role_uuid = Column(String(36), name="role_uuid")
     resource_uuid = Column(String(36), name="resource_uuid")
     action = Column(String(10))
 
@@ -153,7 +153,7 @@ class Permission(Base):
         return {
             "id": self.id,
             "uuid": self.uuid,
-            "gum_role_map_uuid": self.gum_role_map_uuid,
+            "role_uuid": self.role_uuid,
             "resource_uuid": self.resource_uuid,
             "action": self.action
         }
