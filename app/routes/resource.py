@@ -13,11 +13,8 @@ def listData():
 
 @bp.route("/<int:resource_id>", methods=["GET"])
 def show(resource_id):
-    resource = g.session.query(Resources).filter_by(id=resource_id).first()
-    pers = g.current_user.get_permission()
-    for per in pers:
-        print(per.repr())
-    # current_app.oso.authorize(g.current_user, "allow", resource)
+    resource = g.session.query(Resources).filter_by(id=resource_id).one_or_none()
+    current_app.oso.authorize(g.current_user, "allow", resource)
     return resource.repr()
 
 @bp.route("/list", methods=["GET"])

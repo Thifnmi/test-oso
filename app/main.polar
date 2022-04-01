@@ -8,10 +8,10 @@ allow(actor, action, resource) if
 
 # permission for custom role
 has_permission(actor: User, action: String, resource: Resources) if
-  (actor.is_custom() and
   per in actor.get_permission() and
   per.resource_uuid == resource.uuid and
-  action == per.action);
+  action == per.action;
+
 
 # custom permission for role member
 # member only have permission get, list and create  without service billing

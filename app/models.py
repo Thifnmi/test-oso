@@ -48,9 +48,13 @@ class User(Base):
         return gum_role_map
 
     def get_permission(self):
-        gumrm = GUMRoleMap.query.filter_by(gum_uuid=(GroupUserMap.query.filter_by(user_uuid=g.current_user.uuid).first()).uuid).first()
-        permissions = Permission.query.filter_by(role_uuid=gumrm.role_uuid).all()
-        return permissions
+        gumrms = GUMRoleMap.query.filter_by(gum_uuid=(GroupUserMap.query.filter_by(user_uuid=g.current_user.uuid).first()).uuid).all()
+        list_pers = []
+        for gumrm in gumrms:
+            permissions = Permission.query.filter_by(role_uuid=gumrm.role_uuid).all()
+            for permission in permissions:
+                list_pers.append(permission)
+        return list_pers
 
     def is_custom(self):
         gumrms = GUMRoleMap.query.filter_by(gum_uuid=(GroupUserMap.query.filter_by(user_uuid=g.current_user.uuid).first()).uuid).all()
@@ -109,16 +113,16 @@ class Role(Base):
 
     id = Column(Integer, primary_key=True)
     uuid = Column(String(36), name="uuid", unique=True, default=generate_uuid)
-    pum_uuid = Column(String(36), name="pum_uuid", default=generate_uuid)
     name = Column(String)
+    description = Column(String)
     is_custom = Column(Boolean)
 
     def repr(self):
         return {
             "id": self.id,
             "uuid": self.uuid,
-            "pum_uuid": self.uuid,
             "name": self.name,
+            "description": self.description,
             "is_custom": self.is_custom,
         }
 

@@ -86,13 +86,13 @@ def load_data(session):
 
     _insert(session)
 
-    role1 = Role(name="Owner", is_custom=False)
-    role2 = Role(name="billing", is_custom=False)
-    role3 = Role(name="admin", is_custom=False)
-    role4 = Role(name="member", is_custom=False)
-    role5 = Role(name="reader", is_custom=False)
-    role6 = Role(name=f"admin_{group2.uuid}", is_custom=True)
-    role7 = Role(name=f"Owner_{group1.uuid}", is_custom=True)
+    role1 = Role(name="Owner", description="owner", is_custom=False)
+    role2 = Role(name="billing", description="billing", is_custom=False)
+    role3 = Role(name="admin", description="admin", is_custom=False)
+    role4 = Role(name="member", description="member", is_custom=False)
+    role5 = Role(name="reader", description="reader", is_custom=False)
+    role6 = Role(name=f"admin_{group2.uuid}", description="custom role named admin", is_custom=True)
+    role7 = Role(name=f"Owner_{group1.uuid}", description="custom role named owner", is_custom=True)
     roles = [role1, role2, role3, role4, role5, role6, role7]
     for r in roles:
         session.add(r)
@@ -157,6 +157,7 @@ def load_data(session):
 
     _insert(session)
 
+    #permission owner
     permission1 = Permission(role_uuid=role1.uuid, resource_uuid=resource_1.uuid, action="allow")
     permission2 = Permission(role_uuid=role1.uuid, resource_uuid=resource_2.uuid, action="allow")
     permission3 = Permission(role_uuid=role1.uuid, resource_uuid=resource_3.uuid, action="allow")
@@ -177,11 +178,13 @@ def load_data(session):
     permission18 = Permission(role_uuid=role1.uuid, resource_uuid=resource_18.uuid, action="allow")
     permission19 = Permission(role_uuid=role1.uuid, resource_uuid=resource_19.uuid, action="allow")
     permission20 = Permission(role_uuid=role1.uuid, resource_uuid=resource_20.uuid, action="allow")
+    #permission billing
     permission21 = Permission(role_uuid=role2.uuid, resource_uuid=resource_6.uuid, action="allow")
     permission22 = Permission(role_uuid=role2.uuid, resource_uuid=resource_7.uuid, action="allow")
     permission23 = Permission(role_uuid=role2.uuid, resource_uuid=resource_8.uuid, action="allow")
     permission24 = Permission(role_uuid=role2.uuid, resource_uuid=resource_9.uuid, action="allow")
     permission25 = Permission(role_uuid=role2.uuid, resource_uuid=resource_10.uuid, action="allow")
+    #permission admin
     permission26 = Permission(role_uuid=role3.uuid, resource_uuid=resource_1.uuid, action="allow")
     permission27 = Permission(role_uuid=role3.uuid, resource_uuid=resource_2.uuid, action="allow")
     permission28 = Permission(role_uuid=role3.uuid, resource_uuid=resource_3.uuid, action="allow")
@@ -194,6 +197,7 @@ def load_data(session):
     permission35 = Permission(role_uuid=role3.uuid, resource_uuid=resource_17.uuid, action="allow")
     permission36 = Permission(role_uuid=role3.uuid, resource_uuid=resource_18.uuid, action="allow")
     permission37 = Permission(role_uuid=role3.uuid, resource_uuid=resource_19.uuid, action="allow")
+    #permission member
     permission38 = Permission(role_uuid=role4.uuid, resource_uuid=resource_1.uuid, action="allow")
     permission39 = Permission(role_uuid=role4.uuid, resource_uuid=resource_2.uuid, action="allow")
     permission40 = Permission(role_uuid=role4.uuid, resource_uuid=resource_3.uuid, action="allow")
@@ -203,14 +207,30 @@ def load_data(session):
     permission44 = Permission(role_uuid=role4.uuid, resource_uuid=resource_16.uuid, action="allow")
     permission45 = Permission(role_uuid=role4.uuid, resource_uuid=resource_17.uuid, action="allow")
     permission46 = Permission(role_uuid=role4.uuid, resource_uuid=resource_18.uuid, action="allow")
+    #permission reader
     permission47 = Permission(role_uuid=role5.uuid, resource_uuid=resource_1.uuid, action="allow")
     permission48 = Permission(role_uuid=role5.uuid, resource_uuid=resource_2.uuid, action="allow")
     permission49 = Permission(role_uuid=role5.uuid, resource_uuid=resource_11.uuid, action="allow")
     permission50 = Permission(role_uuid=role5.uuid, resource_uuid=resource_12.uuid, action="allow")
     permission51 = Permission(role_uuid=role5.uuid, resource_uuid=resource_16.uuid, action="allow")
     permission52 = Permission(role_uuid=role5.uuid, resource_uuid=resource_17.uuid, action="allow")
+    #permisson cusrole1
+    permission53 = Permission(role_uuid=role6.uuid, resource_uuid=resource_4.uuid, action="allow")
+    permission54 = Permission(role_uuid=role6.uuid, resource_uuid=resource_5.uuid, action="allow")
+    #permission cusrole2
+    permission55 = Permission(role_uuid=role7.uuid, resource_uuid=resource_14.uuid, action="allow")
+    permission56 = Permission(role_uuid=role7.uuid, resource_uuid=resource_15.uuid, action="allow")
 
-    permissions = [permission1, permission2, permission3, permission4, permission5, permission6, permission7, permission8, permission9, permission10, permission11, permission12, permission13, permission14, permission15, permission16, permission17, permission18, permission19, permission20, permission21, permission22, permission23, permission24, permission25, permission26, permission27, permission28, permission29, permission30, permission31, permission32, permission33, permission34, permission35, permission36, permission37, permission38, permission39, permission40, permission41, permission42, permission43, permission44, permission45, permission46, permission47, permission48, permission49, permission50, permission51, permission52]
+    permissions = [permission1, permission2, permission3, permission4, permission5, permission6,
+            permission7, permission8, permission9, permission10, permission11, permission12,
+            permission13, permission14, permission15, permission16, permission17, permission18,
+            permission19, permission20, permission21, permission22, permission23, permission24,
+            permission25, permission26, permission27, permission28, permission29, permission30,
+            permission31, permission32, permission33, permission34, permission35, permission36,
+            permission37, permission38, permission39, permission40, permission41, permission42,
+            permission43, permission44, permission45, permission46, permission47, permission48,
+            permission49, permission50, permission51, permission52, permission53, permission54,
+            permission55, permission56]
     for item in permissions:
         session.add(item)
     

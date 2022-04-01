@@ -1,6 +1,6 @@
 from flask import g, Flask, session as flask_session
 from sqlalchemy import create_engine, and_
-from .models import Base, User, Permission, Group, GroupUserMap, GUMRoleMap, Resources, Role
+from .models import Base, User, Permission, Group, GroupUserMap, GUMRoleMap, Resources, Role, ResourceMapping
 from sqlalchemy.orm import sessionmaker, scoped_session
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 from polar.data.adapter.sqlalchemy_adapter import SqlAlchemyAdapter
@@ -192,6 +192,17 @@ def init_oso(app, Session: sessionmaker):
             "uuid": str,
             "gum_uuid": str,
             "role_uuid": str,
+        }
+    )
+
+    oso.register_class(
+        ResourceMapping,
+        build_query=query_builder(ResourceMapping),
+        fields={
+            "id": int,
+            "uuid": str,
+            "resource_uuid": str,
+            "url": str,
         }
     )
 
