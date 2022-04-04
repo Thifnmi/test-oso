@@ -1,4 +1,3 @@
-import json
 from flask import Blueprint, g, jsonify, current_app
 
 from app.models import Resources
@@ -16,8 +15,3 @@ def show(resource_id):
     resource = g.session.query(Resources).filter_by(id=resource_id).one_or_none()
     current_app.oso.authorize(g.current_user, "allow", resource)
     return resource.repr()
-
-@bp.route("/list", methods=["GET"])
-def list():
-    list = current_app.oso.authorized_resources(g.current_user, "allow", Resources)
-    return jsonify([item.repr() for item in list])

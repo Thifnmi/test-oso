@@ -1,3 +1,4 @@
+autopep8==1.6.0
 black==22.1.0
 cffi==1.15.0
 click==8.0.4
@@ -10,9 +11,11 @@ mypy-extensions==0.4.3
 oso==0.25.0
 pathspec==0.9.0
 platformdirs==2.5.1
+pycodestyle==2.8.0
 pycparser==2.21
 python-dotenv==0.19.2
 SQLAlchemy==1.4.32
+toml==0.10.2
 tomli==2.0.1
 typing-extensions==4.1.1
 Werkzeug==2.0.3
