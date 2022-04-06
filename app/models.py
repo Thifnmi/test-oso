@@ -140,7 +140,7 @@ class GUMRoleMap(Base):
             "id": self.id,
             "uuid": self.uuid,
             "gum_uuid": self.gum_uuid,
-            "name": self.role_uuid,
+            "role_uuid": self.role_uuid,
         }
 
 

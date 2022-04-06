@@ -1,6 +1,6 @@
 import json
 from flask import Blueprint, g, jsonify, current_app, request
-from app.models import User
+from app.models import Group, GroupUserMap, User
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -52,6 +52,35 @@ def createUser():
         "status": 0,
         "status_code": 400
     }), 400
+
+
+@bp.route("/update-user", methods=["POST"])
+def update():
+    payload = request.get_json()
+    if "user_uuid" in payload and "group_uuid" in payload:
+        gum = GroupUserMap(group_uuid=payload["group_uuid"], user_uuid=payload["user_uuid"])
+        try:
+            g.session.add(gum)
+            g.session.flush()
+            g.session.commit()
+            return jsonify({
+                "message": "Update user success",
+                "status": 1,
+                "status_code": 201
+            }), 201
+        except SQLAlchemyError:
+            g.session.rollback()
+            return jsonify({
+                "message": "Update user false",
+                "status": 0,
+                "status_code": 400
+            }), 400
+    return jsonify({
+                "message": "invalid param",
+                "status": 0,
+                "status_code": 404
+            }), 404
+
 
 @bp.route("/delete-user", methods=["DELETE"])
 def deleteUser():
