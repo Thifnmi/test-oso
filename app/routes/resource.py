@@ -20,13 +20,17 @@ def show(resource_id):
 @bp.route("/create-permission", methods=["POST"])
 def create():
     payload = request.get_json()
-    if "name" and "description" and "resource" and "project" in payload:
+    listEndpointRaw = []
+    listEndpoint = []
+    if "name" in payload and "description" in payload and "resource" in payload and "project" in payload:
         resources = payload["resource"]
-        listEndpointRaw = []
-        listEndpoint = []
         for resource in resources:
             try:
-                print(resource)
+                if resource == "*":
+                    key = f"%"
+                    endpoints = Resources.query.filter(Resources.endpoint.like(key)).all()
+                    for endpoint in endpoints:
+                        listEndpointRaw.append(endpoint.repr())
                 if resource.split(".")[0] == "*":
                     key = f"%.{resource.split('.')[1]}.{resource.split('.')[2]}"
                     endpoints = Resources.query.filter(Resources.endpoint.like(key)).all()
@@ -62,12 +66,6 @@ def create():
                     endpoints = Resources.query.filter(Resources.endpoint.like(key)).all()
                     for endpoint in endpoints:
                         listEndpointRaw.append(endpoint.repr())
-                if resource == "*":
-                    key = f"%"
-                    endpoints = Resources.query.filter(Resources.endpoint.like(key)).all()
-                    print("in *")
-                    for endpoint in endpoints:
-                        listEndpointRaw.append(endpoint.repr())
                 else:
                     endpoint = Resources.query.filter_by(endpoint=resource).first()
                     if endpoint:
@@ -89,5 +87,6 @@ def create():
     return jsonify({
         "message": "Invalid payload",
         "status": 0,
-        "status_code": 400
+        "status_code": 400,
+        "resource": listEndpoint
     }), 400
